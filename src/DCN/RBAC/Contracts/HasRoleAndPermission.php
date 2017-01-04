@@ -27,7 +27,7 @@ interface HasRoleAndPermission
      * @param bool $all
      * @return bool
      */
-    public function roleIs($role, $all = false);
+    public function is($role, $all = false);
 
     /**
      * Attach role to a user.
@@ -81,18 +81,18 @@ interface HasRoleAndPermission
      * @param bool $all
      * @return bool
      */
-    public function may($permission, $all = false);
+    public function can($permission, $all = false);
 
     /**
      * Check if the user is allowed to manipulate with entity.
      *
      * @param string $providedPermission
-     * @param \Illuminate\Database\Eloquent\Model $entity
+     * @param string $table
      * @param bool $owner
      * @param string $ownerColumn
      * @return bool
      */
-    public function allowed($providedPermission, Model $entity, $owner = true, $ownerColumn = 'user_id');
+    public function allowed($providedPermission, $table, $owner = false, $ownerColumn = 'user_id');
 
     /**
      * Attach permission to a user.
