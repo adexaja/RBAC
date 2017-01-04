@@ -1,4 +1,4 @@
-# RBAC For Laravel 5.3
+# RBAC For Laravel 5.3 Less Model
 
 Powerful package for handling roles and permissions in Laravel 5.3
 
