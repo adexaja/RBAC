@@ -32,14 +32,13 @@ trait RoleHasRelations
 
     public function parent()
     {
-        return $this->belongsTo(config('rbac.models.role'),'parent_id');
+        return $this->belongsTo(config('rbac.models.role'), 'parent_id');
     }
 
     public function ancestors()
     {
         $ancestors = $this->where('id', '=', $this->parent_id)->get();
-        while ($ancestors->last() && $ancestors->last()->parent_id !== null)
-        {
+        while ($ancestors->last() && $ancestors->last()->parent_id !== null) {
             $parent = $this->where('id', '=', $ancestors->last()->parent_id)->get();
             $ancestors = $ancestors->merge($parent);
         }
@@ -54,15 +53,16 @@ trait RoleHasRelations
      */
     public function children()
     {
-        return $this->hasMany(config('rbac.models.role'),'parent_id');
+        return $this->hasMany(config('rbac.models.role'), 'parent_id');
     }
 
     public function descendants()
     {
         $descendants = $this->where('parent_id', '=', $this->id)->get();
 
-        foreach($descendants as $descendant)
+        foreach ($descendants as $descendant) {
             $descendants = $descendants->merge($descendant->descendants());
+        }
 
         return $descendants;
     }
@@ -76,7 +76,7 @@ trait RoleHasRelations
      */
     public function attachPermission($permission, $granted = true)
     {
-        return (!$this->permissions()->get()->contains($permission)) ? $this->permissions()->attach($permission, array('granted' => $granted)) : true;
+        return (!$this->permissions()->get()->contains($permission)) ? $this->permissions()->attach($permission, ['granted' => $granted]) : true;
     }
 
     /**

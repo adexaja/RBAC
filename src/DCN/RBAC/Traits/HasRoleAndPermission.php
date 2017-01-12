@@ -36,14 +36,16 @@ trait HasRoleAndPermission
     /**
      * Get only Granted Roles
      */
-    public function grantedRoles() {
+    public function grantedRoles()
+    {
         return $this->roles()->wherePivot('granted', true);
     }
 
     /**
      * Get only Denied Roles
      */
-    public function deniedRoles() {
+    public function deniedRoles()
+    {
         return $this->roles()->wherePivot('granted', false);
     }
 
@@ -60,14 +62,16 @@ trait HasRoleAndPermission
     /**
      * Get only Granted Permissions
      */
-    public function grantedPermissions() {
+    public function grantedPermissions()
+    {
         return $this->userPermissions()->wherePivot('granted', true);
     }
 
     /**
      * Get only Denied Permissions
      */
-    public function deniedPermissions() {
+    public function deniedPermissions()
+    {
         return $this->userPermissions()->wherePivot('granted', false);
     }
 
@@ -78,18 +82,21 @@ trait HasRoleAndPermission
      */
     public function getRoles()
     {
-        if(!$this->roles){
+        if (!$this->roles) {
             $this->roles = $this->grantedRoles()->get();
 
             $deniedRoles = $this->deniedRoles()->get();
-            foreach($deniedRoles as $role)
+            foreach ($deniedRoles as $role) {
                 $deniedRoles = $deniedRoles->merge($role->descendants());
+            }
 
-            foreach($this->roles as $role)
-                if(!$deniedRoles->contains($role))
+            foreach ($this->roles as $role) {
+                if (!$deniedRoles->contains($role)) {
                     $this->roles = $this->roles->merge($role->descendants());
+                }
+            }
 
-            $this->roles = $this->roles->filter(function($role) use ($deniedRoles){
+            $this->roles = $this->roles->filter(function ($role) use ($deniedRoles) {
                 return !$deniedRoles->contains($role);
             });
         }
@@ -103,10 +110,10 @@ trait HasRoleAndPermission
      */
     public function rolePermissions()
     {
-
         $permissions = new Collection();
-        foreach ($this->getRoles() as $role)
+        foreach ($this->getRoles() as $role) {
             $permissions = $permissions->merge($role->permissions);
+        }
         return $permissions;
     }
 
@@ -117,15 +124,14 @@ trait HasRoleAndPermission
      */
     public function getPermissions()
     {
-        if(!$this->permissions){
+        if (!$this->permissions) {
             $rolePermissions = $this->rolePermissions();
             $userPermissions = $this->grantedPermissions()->get();
 
             $permissions = $rolePermissions->merge($userPermissions);
             $deniedPermissions =$this->deniedPermissions()->get();
 
-            $this->permissions = $permissions->filter(function($permission) use ($deniedPermissions)
-            {
+            $this->permissions = $permissions->filter(function ($permission) use ($deniedPermissions) {
                 return !$deniedPermissions->contains($permission);
             });
         }
@@ -306,12 +312,13 @@ trait HasRoleAndPermission
      * @param bool $granted
      * @return bool|null
      */
-    public function attachRole($role, $granted = TRUE)
+    public function attachRole($role, $granted = true)
     {
-        if($granted)
-            return (!$this->grantedRoles()->get()->contains($role)) ? $this->roles()->attach($role, array('granted' => TRUE)) : true;
-        else
-            return (!$this->deniedRoles()->get()->contains($role)) ? $this->roles()->attach($role, array('granted' => FALSE)) : true;
+        if ($granted) {
+            return (!$this->grantedRoles()->get()->contains($role)) ? $this->roles()->attach($role, ['granted' => true]) : true;
+        } else {
+            return (!$this->deniedRoles()->get()->contains($role)) ? $this->roles()->attach($role, ['granted' => false]) : true;
+        }
     }
 
     /**
@@ -344,11 +351,11 @@ trait HasRoleAndPermission
      */
     public function attachPermission($permission, $granted = true)
     {
-        if($granted)
-            return (!$this->grantedPermissions()->get()->contains($permission)) ? $this->userPermissions()->attach($permission, array('granted' => TRUE)) : true;
-        else
-            return (!$this->deniedPermissions()->get()->contains($permission)) ? $this->userPermissions()->attach($permission, array('granted' => FALSE)) : true;
-
+        if ($granted) {
+            return (!$this->grantedPermissions()->get()->contains($permission)) ? $this->userPermissions()->attach($permission, ['granted' => true]) : true;
+        } else {
+            return (!$this->deniedPermissions()->get()->contains($permission)) ? $this->userPermissions()->attach($permission, ['granted' => false]) : true;
+        }
     }
 
     /**

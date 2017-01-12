@@ -51,7 +51,7 @@ interface RoleHasRelations
      * @param bool $granted
      * @return bool|int
      */
-    public function attachPermission($permission, $granted = TRUE);
+    public function attachPermission($permission, $granted = true);
 
     /**
      * Detach permission from a role.
